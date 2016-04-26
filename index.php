@@ -12,8 +12,13 @@ $displayname = $USER->displayname;
 
 // if grade was sent via post
 if ( isset($_POST['grade']) )  {
-    // Parse dummy HTML passed in
-    list($id, $question, $grade) = APT::getInfo($_POST['grade']);
+    // hardcode values for now
+    $user = APT::getUser($_POST['grade']);
+    $problem = APT::getProblem($_POST['grade']);
+    $grade = APT::getGrade($_POST['grade']);
+    // list($id, $question, $grade) = APT::getInfo($_POST['grade']);
+    // Make sure functions are working properly
+    $_SESSION['error'] = $text = 'Problem: '.$problem.', grade: '.$grade.', user: '.$user;
     // convert grade to float
     $gradetosend = $grade + 0.0;
     // grade validation
@@ -32,25 +37,25 @@ if ( isset($_POST['grade']) )  {
 
     // $prevgrade = 0.5;
 
-    if ( $gradetosend > 0.0 && $gradetosend < $prevgrade ) {
-        $_SESSION['error'] = "Grade lower than $prevgrade - not sent";
-    } else {
-        // Use LTIX to send the grade back to the LMS.
-        $debug_log = array();
-        $retval = LTIX::gradeSend($gradetosend, false, $debug_log);
-        $_SESSION['debug_log'] = $debug_log;
-
-        if ( $retval === true ) {
-            $_SESSION['success'] = "Grade $gradetosend sent to server.";
-        } else if ( is_string($retval) ) {
-            $_SESSION['error'] = "Grade not sent: ".$retval;
-        } else {
-            echo("<pre>\n");
-            var_dump($retval);
-            echo("</pre>\n");
-            die();
-        }
-    }
+    // if ( $gradetosend > 0.0 && $gradetosend < $prevgrade ) {
+    //     $_SESSION['error'] = "Grade lower than $prevgrade - not sent";
+    // } else {
+    //     // Use LTIX to send the grade back to the LMS.
+    //     $debug_log = array();
+    //     $retval = LTIX::gradeSend($gradetosend, false, $debug_log);
+    //     $_SESSION['debug_log'] = $debug_log;
+    //
+    //     if ( $retval === true ) {
+    //         $_SESSION['success'] = "Grade $gradetosend sent to server.";
+    //     } else if ( is_string($retval) ) {
+    //         $_SESSION['error'] = "Grade not sent: ".$retval;
+    //     } else {
+    //         echo("<pre>\n");
+    //         var_dump($retval);
+    //         echo("</pre>\n");
+    //         die();
+    //     }
+    // }
 
     // Redirect to ourself
     header('Location: '.addSession('index.php'));
